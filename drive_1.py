@@ -1,6 +1,6 @@
 import RPi.GPIO as GPIO
 import curses
-from pynput import keyboard
+# from pynput import keyboard
 from time import sleep
 
 # GPIO Pin Setup
@@ -10,6 +10,13 @@ RIGHT_MOTOR_FORWARD = 22
 RIGHT_MOTOR_BACKWARD = 23
 LEFT_MOTOR_ENABLE = 13
 RIGHT_MOTOR_ENABLE = 12
+
+# LEFT_MOTOR_FORWARD = 22
+# LEFT_MOTOR_BACKWARD = 23
+# RIGHT_MOTOR_FORWARD = 17
+# RIGHT_MOTOR_BACKWARD = 18
+# LEFT_MOTOR_ENABLE = 12
+# RIGHT_MOTOR_ENABLE = 13
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LEFT_MOTOR_FORWARD, GPIO.OUT)
