@@ -8,12 +8,22 @@ LEFT_MOTOR_FORWARD = 17
 LEFT_MOTOR_BACKWARD = 18
 RIGHT_MOTOR_FORWARD = 22
 RIGHT_MOTOR_BACKWARD = 23
+LEFT_MOTOR_ENABLE = 13
+RIGHT_MOTOR_ENABLE = 12
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LEFT_MOTOR_FORWARD, GPIO.OUT)
 GPIO.setup(LEFT_MOTOR_BACKWARD, GPIO.OUT)
+GPIO.setup(LEFT_MOTOR_ENABLE, GPIO.OUT)
 GPIO.setup(RIGHT_MOTOR_FORWARD, GPIO.OUT)
 GPIO.setup(RIGHT_MOTOR_BACKWARD, GPIO.OUT)
+GPIO.setup(RIGHT_MOTOR_ENABLE, GPIO.OUT)
+
+left_pwm = GPIO.PWM(LEFT_MOTOR_ENABLE, 1000)
+right_pwm = GPIO.PWM(RIGHT_MOTOR_ENABLE, 1000)
+speed = 30
+left_pwm.start(speed)
+right_pwm.start(speed)
 
 def timed_stop(time=0.5):
     sleep(time)
@@ -124,6 +134,8 @@ def main(stdscr):
 
     finally:
         stop()
+        left_pwm.stop()
+        right_pwm.stop()
         GPIO.cleanup()
         curses.nocbreak()
         stdscr.keypad(False)
