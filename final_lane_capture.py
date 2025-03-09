@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from picam2 import Picamera2
+from picamera2 import Picamera2
 import traceback
 from time import sleep
 # import matplotlib.pyplot as plt
