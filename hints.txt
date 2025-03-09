@@ -1,3 +1,0 @@
-yolo(12/13) nano for image detection
-thresholding for lane detection using colors
-Canny H edge detection found in open cv.
