@@ -83,6 +83,8 @@ try:
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
+        sleep(0.1)
+
 except Exception as e:
     print(traceback.format_exc())
 
