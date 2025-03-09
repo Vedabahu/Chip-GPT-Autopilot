@@ -49,7 +49,7 @@ def hough_space(canny_image):
 
 # image = cv2.imread("sample.jpg")
 
-cap = cv2.VideoCapture("./videos/dataset_5.mp4")
+cap = cv2.VideoCapture("../datasets/videos/dataset_5.mp4")
 
 ret, frame = cap.read()
 if not ret:
