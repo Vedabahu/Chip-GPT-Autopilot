@@ -7,6 +7,7 @@ Chip GPT team code for the raspberry pi to run an autonomous car.
 ## Prerequsites
 
 > Most of it is run on a Raspberry Pi 3 B+. Some codes can be run locally without a RPi.
+> Many of the libraries (like `libcamera`) do not run in a virtual environment. It requires the direct local installation of python. Many linux distributions prepackage the packages so we have to install it using the package manager of that OS.
 
 1. Raspberry Pi Model 3 B+
 1. Camera module
