@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+from picam2 import Picamera2
+import traceback
+from time import sleep
+# import matplotlib.pyplot as plt
 
 
 def canny(image):
@@ -24,6 +27,7 @@ def filter_hsv(image):
 
     return filtered, mask
 
+
 def region_of_interset(image):
     height, width = image.shape[0], image.shape[1]
     polygons = np.array([[(0, 300), (width, 300), (width, height), (0, height)]])
@@ -44,49 +48,49 @@ def hough_space(canny_image):
             x1, y1, x2, y2 = line.reshape(4)
             cv2.line(line_image, (x1, y1), (x2, y2), (255, 255, 255), 5)
 
-    return line_image
+    return line_image, lines
 
 
 # image = cv2.imread("sample.jpg")
 
-cap = cv2.VideoCapture("./videos/dataset_5.mp4")
+# cap = cv2.VideoCapture("./videos/dataset_5.mp4")
 
-ret, frame = cap.read()
-if not ret:
-    print("Failed to read video")
-    cap.release()
-    exit()
+picam2 = Picamera2()
+video_config = picam2.create_preview_configuration(main={"size": (640, 480)})
+picam2.configure(video_config)
+picam2.start()
 
-# lane_image = np.copy(frame)
-canny_img = canny(frame)
+# canny_img = canny(frame)
 # cropped_image = region_of_interset(canny_img)
-final_img = hough_space(canny_img)
+# final_img = hough_space(canny_img)
 
-fig, ax = plt.subplots()
-im = ax.imshow(frame)
-# plt.imshow(final_img)
-# plt.show()
+try:
+    while True:
+        image = picam2.capture_array()
 
-while cap.isOpened():
-    ret, image = cap.read()
-    if not ret:
-        break  # Stop if video ends
+        # canny_img = filter_hsv(image)
+        # cropped_image = region_of_interset(canny_img)
+        # final_img = hough_space(canny_img)
 
-    # lane_image = np.copy(image)
-    # canny_img = filter_hsv(image)
-    # cropped_image = region_of_interset(canny_img)
-    # final_img = hough_space(canny_img)
+        filtered, mask = filter_hsv(image)
+        cropped_image = region_of_interset(mask)
+        final_img, lines = hough_space(mask)
 
-    filtered, mask = filter_hsv(image)
-    cropped_image = region_of_interset(mask)
-    final_img = hough_space(mask)
-    
+        #TODO: Lines above will be used for steering
 
-    im.set_data(final_img)
-    plt.pause(0.03)
+        cv2.imshow('Lane detection', final_img)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+except Exception as e:
+    print(traceback.format_exc())
+
+
+finally:
+    cv2.destroyAllWindows()
+
 # imS = cv2.resize(cropped_image, (960, 540))  # Resize image
-cap.release()
-plt.close()
 
 # cv2.imshow("result", imS)
 # cv2.waitKey(0)
