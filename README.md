@@ -16,10 +16,10 @@ Chip GPT team code for the raspberry pi to run an autonomous car.
 
 ## Directory structure
 
-- `auto_drivin` : for the code related to automatic driving
-    - `auto_driving/optimized-lane-detect-drive.py` : final working code for autonomous driving
-- `driving` : code related to drive the car manually using the arrow keys.
-    - `driving/drive_curses.py` : final good working code
-- `record` : code related to recording the video using RPi.
-    - `record/record_native_library.py` : final working code to get videos
-- `datasets` : consists of the datasets used to optimize the threshold in the code.
+- [auto_drivin](./auto_driving/) : for the code related to automatic driving
+    - [auto_driving/optimized-lane-detect-drive.py](./auto_driving/optimized-lane-detect-drive.py) : final working code for autonomous driving
+- [driving](./driving/) : code related to drive the car manually using the arrow keys.
+    - [driving/drive_curses.py](./driving/drive_curses.py) : final good working code
+- [record](./record/) : code related to recording the video using RPi.
+    - [record/record_native_library.py](./record/record_native_library.py) : final working code to get videos
+- [datasets](./datasets/) : consists of the datasets used to optimize the threshold in the code.
