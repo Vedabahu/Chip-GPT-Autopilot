@@ -15,13 +15,6 @@ RIGHT_MOTOR_BACKWARD = 23
 LEFT_MOTOR_ENABLE = 13
 RIGHT_MOTOR_ENABLE = 12
 
-# LEFT_MOTOR_FORWARD = 22
-# LEFT_MOTOR_BACKWARD = 23
-# RIGHT_MOTOR_FORWARD = 17
-# RIGHT_MOTOR_BACKWARD = 18
-# LEFT_MOTOR_ENABLE = 12
-# RIGHT_MOTOR_ENABLE = 13
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(LEFT_MOTOR_FORWARD, GPIO.OUT)
 GPIO.setup(LEFT_MOTOR_BACKWARD, GPIO.OUT)
@@ -94,22 +87,6 @@ def stop():
 #     return deviation
 
 def calculate_lane_position(lines, image_width, estimated_lane_width=200):
-    """
-    Determines the deviation of the vehicle from the lane center.
-    If both left and right lane markings are detected, the lane center is 
-    computed as the average of their centers.
-    If only one marking is detected, the lane center is estimated by offsetting 
-    the marking by an expected lane width.
-    
-    Parameters:
-        lines (ndarray): Detected lane lines (each line as [x1,y1,x2,y2]).
-        image_width (int): Width of the frame.
-        estimated_lane_width (int): Assumed width of the lane in pixels.
-        
-    Returns:
-        deviation (float): Difference between estimated lane center and frame center.
-                           Positive value means lane center is to the right.
-    """
     if lines is None:
         return None  # No lane detected
 
@@ -183,6 +160,7 @@ def hough_space(canny_image):
         canny_image, 1, np.pi / 180, threshold=80, minLineLength=100, maxLineGap=25
     )
 
+    ## Reduce processing load by removing unused functions
     # line_image = np.zeros_like(canny_image)
     # if lines is not None:
     #     for line in lines:
@@ -201,6 +179,46 @@ picam2 = Picamera2()
 video_config = picam2.create_preview_configuration(main={"size": (640, 480)})
 picam2.configure(video_config)
 picam2.start()
+
+try:
+    while True:
+        image = picam2.capture_array()
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        _, mask = filter_hsv(image)
+#        cropped_image = region_of_interset(mask)
+        _, lines = hough_space(mask)
+
+        deviation = calculate_lane_position(lines, image.shape[1])
+
+        if deviation is None:
+            stop()  # No lanes detected → Stop
+            move_backward()
+            print("Stop")
+        elif deviation < -30:
+            turn_left()  # Turn left
+            print("Left")
+        elif abs(deviation) < 30:
+            move_forward()  # Move straight
+            print("Forward")
+        elif deviation > 30:
+            turn_right()  # Turn right
+            print("Right")
+
+        # cv2.imshow('Lane detection', mask)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        sleep(0.1)
+
+except Exception as e:
+    print(traceback.format_exc())
+
+finally:
+    stop()
+    GPIO.cleanup()
+    cv2.destroyAllWindows()
 
 # canny_img = canny(frame)
 # cropped_image = region_of_interset(canny_img)
@@ -242,44 +260,4 @@ picam2.start()
 
 # cv2.imshow("result", imS)
 # cv2.waitKey(0)
-
-try:
-    while True:
-        image = picam2.capture_array()
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-
-        _, mask = filter_hsv(image)
-#        cropped_image = region_of_interset(mask)
-        _, lines = hough_space(mask)
-
-        deviation = calculate_lane_position(lines, image.shape[1])
-
-        if deviation is None:
-            stop()  # No lanes detected → Stop
-            move_backward()
-            print("Stop")
-        elif deviation < -30:
-            turn_left()  # Turn left
-            print("Left")
-        elif abs(deviation) < 30:
-            move_forward()  # Move straight
-            print("Forward")
-        elif deviation > 30:
-            turn_right()  # Turn right
-            print("Right")
-
-        # cv2.imshow('Lane detection', mask)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-        sleep(0.1)
-
-except Exception as e:
-    print(traceback.format_exc())
-
-finally:
-    stop()
-    GPIO.cleanup()
-    cv2.destroyAllWindows()
 
