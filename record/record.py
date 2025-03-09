@@ -3,12 +3,6 @@ from picamera2 import Picamera2
 import time
 
 def record_video(filename, duration, resolution=(640, 480), framerate=20.0):
-    """
-    Records a video using the Raspberry Pi Camera Module.
-
-    :param filename: Name of the file where the video will be saved.
-    :param duration: Duration of the video recording in seconds.
-    """
     # Initialize Picamera2
     picam2 = Picamera2()
     video_config = picam2.create_video_configuration(main={"size": resolution})
